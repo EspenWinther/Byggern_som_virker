@@ -34,7 +34,6 @@ void CAN_send(CAN_message * msg)
 			MCP_write(TXB0D0+i,msg->data[i]);				// Write data to the data handling register (3-8). iterate through TXBnDm (n.m =1,2,3...)
 		}
 
-
 		MCP_request();										// Request to send written message MCP_RTS_ALL
 	}
 	else													// If message is not sent
@@ -79,18 +78,5 @@ void CAN_read2(CAN_message * msg)														// Reads a CAN message
 		MCP_bitmod(MCP_EFLG, 0xFF, 0);												// Clear intrupt flag. For later
 		MCP_bitmod(MCP_CANINTF, 0x01, 0);										// clear the interrupt flag, so the receiver buffer registry can be overwritten
 	}
-	//else
-	//{
-		//msg->id = -1;																	// Error feature. Message not received
-		//printf("Error");
-	//}	
 
 }
-
-
-//ISR(INT0_vect)
-	//{
-	////_delay_us(10);
-	//CAN_Int_Reset(); //vect
-	//}
-	

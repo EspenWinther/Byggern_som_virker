@@ -20,8 +20,8 @@
 #include "Joystick.h"
 //#include "fonts.h"
 #include "Buzz.h"
-#include "SPI.h"
-#include "MCP2515.h"
+//#include "SPI.h"
+//#include "MCP2515.h"
 #include "CAN.h"
 #include "Game_play.h"
 
@@ -37,7 +37,7 @@ int main(void)
 	PORTB = 0b00000100;					//pull-up pin2
 	
 	UartInit();
-	printf("start på program \n");
+	//printf("start på program \n");
 	//SRAM_init();
 	buzzinit();
 	ADC_init();
@@ -62,89 +62,76 @@ int main(void)
 	sei();
 
 
-	calibrate();
-	OLED_Reset();
-	OLED_NameScreen();
+	calibrate();						// Calibrate Joystick
+	OLED_Reset();						// Clear OLED screen
+	OLED_NameScreen();					// Get username
 	
 			
-	//CAN_message myMessage;				//test message
-	printf("Start på program\n");
-	CAN_message in;						//Receiver generated message
+	printf("Start på program\n");		// Test function
+	CAN_message in;						// Receiver generated message
 	
     
 	
-	while(1)
-    {
-		OLED_menu();
-		// MENY STUKTUR
-				//if(read_knappJoy() == 1)
-				//{
-					switch(p)
-					{
-						case 2:
-						{
-							Game_over = 0;
-							OLED_Reset();
-							OLED_Home();
-							OLED_print("PING-PONG", 8);
-							OLED_goto(0, 105);
-							OLED_print(&Name, 8);
-							_delay_ms(200);
-							score = 0;
-							oldscore = -1;
-							whileplaying(score);
+	while(1){
+		OLED_menu();					// Main Menu returning p
+		switch(p)						// p (current line) is used to check which action to use
+		{
+			case 2:						// Line 2 is used as Ping-Pong game start
+			{
+				Game_over = 0;				// No Game Over when starting
+				OLED_Reset();				// Clear screen
+				OLED_Home();				// Start screen at upper left corner
+				OLED_print("PING-PONG", 8);	// Print on screen
+				OLED_goto(0, 105);			// Upper right corner
+				OLED_print(&Name, 8);		// Pring user name
+				_delay_ms(200);				// Wait
+				score = 0;					// Reset game score
+				oldscore = -1;				// Reset compare score variable
+				whileplaying(score);		// Update screen with 0 score value
 
-							while (!Game_over)
-							{
-								CAN_read2(&in);
-								_delay_ms(10);
-								if (can_flag > 5)
-								{
-									if (in.id == 25){
-										score = in.data[0];
-										whileplaying(score);
-										if (in.data[1] > 0){
-											Game_over = 1;
-											death_sfx();
-											OLED_Game_Over(score);
-											break;
-										} 
-									}
-									Ping_Pong();				// HER SENDES DET EN MELDING
-									can_flag = 0;
-								}
-							}
+				while (!Game_over)			// Run until Game Over ( IR is tripped)
+				{
+					CAN_read2(&in);			// Read CAN bus
+					_delay_ms(10);			// Read delay
+					if (can_flag > 5){		// Write delay, flag is incremented at 50 Hz in ISR
+						if (in.id == 2){			// Only one ID is accepted
+							score = in.data[0];		// Game score value is received from node 2
+							whileplaying(score);	// Update screen with new score
+							if (in.data[1] > 0){		// If Game over variable is set
+								Game_over = 1;			// GAME OVER
+								death_sfx();			// Play Game Over sound
+								OLED_Game_Over(score);	// Go to Game Over screen and plot score
+								break;					// Stop
+							} 
 						}
-						break;
-						
-						case 4  :
-						{
-							//printf("Highscore");
-							OLED_highscore();
-							_delay_ms(200);
-						}
-						break;
-						
-						case 6:
-						{
-							OLED_animation();
-						}
-						break;
-						
-						default :
-						break;
+						Ping_Pong();				// Game play routine
+						can_flag = 0;				// Reset flag
 					}
-				//}
-
-	
-
-
-
+				}
+			}
+			break;
+						
+			case 4  :						// Highscore screen
+			{
+				OLED_highscore();
+				_delay_ms(200);
+			}
+			break;
+						
+			case 6:							// Random button
+			{
+				OLED_animation();			// Play animation
+			}
+			break;
+						
+			default :
+			break;
+		}
 	}
 }	
 
 // ISR for CAN timer
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER1_COMPA_vect)				// Timer ISR at 50 Hz
 {	
 	// Enable sending of joystick data
 	can_flag++;

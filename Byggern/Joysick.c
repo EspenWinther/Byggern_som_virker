@@ -53,7 +53,6 @@ void calibrate(){
 		if(x_akse_max<x_akse){x_akse_max=x_akse;}
 		if(y_akse_min>y_akse){y_akse_min=y_akse;}
 		if(y_akse_max<y_akse){y_akse_max=y_akse;}
-		//printf ("xMin: %i xMaks: %i yMin: %i yMaks: %i \n", x_akse_min,x_akse_max,y_akse_min,y_akse_max);
 	}
 	int calibrated [] = {x_akse_min,x_akse_max,y_akse_min,y_akse_max};
 	printf ("Kalibrerte verdier: \n xMin: %i xMaks: %i yMin: %i yMaks: %i \n xAVG: %i yAVG: %i \n", calibrated[0],calibrated[1],calibrated[2],calibrated[3], x_center, y_center);

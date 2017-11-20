@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "eeprom.h"
 #include "Buzz.h"
+#include "SRAM_test.h"
 
 volatile char *write_c = (char *) 0x1000;
 volatile char *write_d = (char *) 0x1200; 
@@ -216,7 +217,7 @@ void OLED_Game_Over(char score){
 	}
 	write_eeprom(0x10,score);
 	OLED_goto(3, 10);
-	OLED_print("GAME OVER! :-(",8);
+	OLED_print("GAME OVER! :-(", 8);
 	_delay_ms(5000);
 	OLED_Reset();
 }
@@ -348,9 +349,12 @@ void OLED_animation(){
 				a = ((a>>4) & 0x0f) | ((a<<4) & 0xf0);
 				// Inverting the bytes
 				*write_d = a;
-				//if (j < 2){
-					SRAM_write(i+(j*128),a);
-				//}
+				if (j == 0){
+					SRAM_write(i,a);
+				}
+				else if (j == 5){
+					SRAM_write(i+(8*128),a);
+				}
 			}
 		}
 	}
@@ -359,24 +363,22 @@ void OLED_animation(){
 	
 	OLED_Reset();
 	OLED_Home();
-	OLED_print("NA KOMMER", 8);
-	OLED_goto(3,0);
-	OLED_print("SRAM DATA!", 8);
+	OLED_print("SRAM", 8);
 	_delay_ms(1000);
 	OLED_Home();
 	*write_c = 0x20;
 	*write_c = 0b0001;
 	
-	for(int k=0;k<10;k++){
-		for(int j=0; j<7; j++){
-			_delay_ms(100);
+	for(int k=0;k<50;k++){
+		for(int j=0; j<2; j++){
+			_delay_ms(200);
 			for (int i = 0 ; i<8*128 ; i++)
 			{
-				*write_d = SRAM_read(i+(j*128));
+				*write_d = SRAM_read(i+(j*8*128));
 			}
 		}
 	}
-	_delay_ms(5000);
+	_delay_ms(2000);
 	*write_c = 0x20;
 	*write_c = 0b0010;
 }

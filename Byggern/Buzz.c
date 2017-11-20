@@ -2,6 +2,7 @@
 #include "setup.h"
 #include <util/delay.h>
 #include "Buzz.h"
+#include "Joystick.h"
 
 
 

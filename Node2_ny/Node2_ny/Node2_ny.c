@@ -61,7 +61,7 @@ char DAC_address = 0b01010000;					// 7 bit address for DAC
 		if (CANcounter > 0){		// Write delay
 			
 			if (!IR_read()){		// Game over if the IR light is broken
-				out.id = 25;
+				out.id = 2;
 				out.length = 2;
 				out.data[1] = 1;		// Game over
 				CAN_send(&out);			// Send data to node 1
@@ -70,7 +70,8 @@ char DAC_address = 0b01010000;					// 7 bit address for DAC
 				_delay_ms(1000);		// Wait Game over delay
 				out.data[0] = shotcounter;		// Send back the reset score
 				out.data[1] = 0;		// Reset Game over
-				CAN_send(&out);			// Send data to Node 1 
+				CAN_send(&out);			// Send data to Node 1
+				CANcounter = 0;			// Reset counter
 			}
 			
 			else if (in.id == 3)		// ONLY accept one ID from node 1.
@@ -82,23 +83,24 @@ char DAC_address = 0b01010000;					// 7 bit address for DAC
 				pwm_set_angle(joystick_a, 1);	// Use joystick to adjust servo
 				CD_PID(slider_a);				// Use slider to adjust position of carriage
 				sol_shot(joybtn);				// Use button to shoot the plunger
+				CANcounter = 0;					// Reset counter
 			}	
 			
 			
-			else if (joybtn){
+			else if (joybtn | (CANcounter > 100)){
 				//printf("Joy");
 				if (Scorecounter > 30){		// Delay in shooting to reduce cheating ;-)
 					shotcounter++;			// Increase score
 					Scorecounter = 0;		
 				}
-				out.id = 25;				// ID for score and Game over
+				out.id = 2;					// ID for score and Game over
 				out.length = 2;				
 				out.data[0] = shotcounter;	// Send new score value
 				//out.data[1] = 0;
 				CAN_send(&out);				// Send to node 1
 				_delay_ms(100);				// Wait a bit
+				CANcounter = 0;				// Reset counter
 			}
-		CANcounter = 0;						// Reset counter
 		_delay_ms(10);
 		}
 	}

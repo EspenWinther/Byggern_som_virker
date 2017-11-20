@@ -21,7 +21,7 @@ Byggern.d Byggern.o: .././Byggern.c \
  c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1061\avr8-gnu-toolchain\avr\include\util\delay_basic.h \
  c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1061\avr8-gnu-toolchain\avr\include\math.h \
  .././UART.h .././ADC_test.h .././OLED.h .././Joystick.h .././Buzz.h \
- .././SPI.h .././MCP2515.h .././CAN.h .././Game_play.h
+ .././CAN.h .././Game_play.h
 
 c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1061\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -74,10 +74,6 @@ c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1061\avr8-g
 .././Joystick.h:
 
 .././Buzz.h:
-
-.././SPI.h:
-
-.././MCP2515.h:
 
 .././CAN.h:
 

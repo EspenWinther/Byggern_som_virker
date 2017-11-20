@@ -33,7 +33,15 @@ unsigned char SPI_tranciever(unsigned char data)
 
 
 void spi_chipselect(unsigned char enable){
-	enable
-	? (PORTB &= ~(1<<PB7))
-	: (PORTB |= (1<<PB7));
+	if (enable > 1){
+		enable = enable % 2;
+		enable
+		? (PORTB &= ~(1<<PB7))		// Bytt til rett port
+		: (PORTB |= (1<<PB7));
+	}
+	else{
+		enable
+		? (PORTB &= ~(1<<PB7))
+		: (PORTB |= (1<<PB7));
+	}
 } 

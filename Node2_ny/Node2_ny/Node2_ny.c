@@ -83,11 +83,11 @@ char DAC_address = 0b01010000;					// 7 bit address for DAC
 				pwm_set_angle(joystick_a, 1);	// Use joystick to adjust servo
 				CD_PID(slider_a);				// Use slider to adjust position of carriage
 				sol_shot(joybtn);				// Use button to shoot the plunger
-				CANcounter = 0;					// Reset counter
+				//CANcounter = 0;					// Reset counter
 			}	
 			
 			
-			else if (joybtn | (CANcounter > 100)){
+			else if (joybtn){				// If shot has been executed
 				//printf("Joy");
 				if (Scorecounter > 30){		// Delay in shooting to reduce cheating ;-)
 					shotcounter++;			// Increase score
@@ -95,6 +95,15 @@ char DAC_address = 0b01010000;					// 7 bit address for DAC
 				}
 				out.id = 2;					// ID for score and Game over
 				out.length = 2;				
+				out.data[0] = shotcounter;	// Send new score value
+				//out.data[1] = 0;
+				CAN_send(&out);				// Send to node 1
+				_delay_ms(100);				// Wait a bit
+				CANcounter = 0;				// Reset counter
+			}
+			else if (CANcounter > 100){		// Keep the CAN bus alive
+				out.id = 2;					// ID for score and Game over
+				out.length = 2;
 				out.data[0] = shotcounter;	// Send new score value
 				//out.data[1] = 0;
 				CAN_send(&out);				// Send to node 1
